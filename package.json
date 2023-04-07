@@ -5,7 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "NODE_ENV=testing node test.js",
+    "login:ecr": "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 282898975672.dkr.ecr.us-east-1.amazonaws.com",
     "dev:build": "docker compose up --build",
     "dev": "docker compose up",
     "build:image": "docker build -t lighthouse-service:test .",
