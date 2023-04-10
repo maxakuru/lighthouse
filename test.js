@@ -5,6 +5,7 @@ await handler({
     url: 'https://project.hlx.page/'
   },
   "headers": {
-    "x-set-cookies": "hlx-auth-token=token"
+    "x-set-cookie": "hlx-auth-token=token"
   }
 });
+

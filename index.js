@@ -9,6 +9,14 @@ const TIMEOUT = 30 * 1000;
  * @type {import('aws-lambda').Handler<import('aws-lambda').APIGatewayEvent>}
  */
 export const handler = async (event) => {
+  if(event.httpMethod === 'OPTIONS') {
+    return makeResponse(200, null, { 
+      'access-control-allow-origin': '*',
+      'access-control-allow-methods': 'GET',
+      'access-control-allow-headers': 'x-set-cookie,x-set-headers'
+    });
+  }
+
   try {
     const config = resolveConfig(event);
     const lighthouseResult = await timeout(() => runLighthouse(config), TIMEOUT);
