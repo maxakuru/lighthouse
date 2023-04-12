@@ -23,12 +23,12 @@
       } catch { }
 
       if (!resp.ok) {
-        resultsEl.innerHTML = `<div class="error"><h5>Error:</h5><p>${data.message || resp.headers.get('x-error')}</p></div>`;
+        resultsEl.innerHTML = `<div class="error"><h4>Error:</h4><p>${data.message || resp.headers.get('x-error')}</p></div>`;
         return;
       }
 
       console.log('results: ', data);
-      resultsEl.innerHTML = `<div class="success"><h5>Results:</h5><code>${JSON.stringify(data, undefined, 2)}</code></div>`;
+      resultsEl.innerHTML = `<div class="success"><h4>Results:</h4><pre>${JSON.stringify(data, undefined, 2)}</pre></div>`;
     }
   </script>
 </head>

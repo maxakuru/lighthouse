@@ -5,18 +5,19 @@ import BASE_MOBILE_CONFIG from 'lighthouse/core/config/lr-desktop-config.js';
 import chromium from '@sparticuz/chromium';
 import { throwableResponse } from './response.js';
 
-/** @type {import('lighthouse').Flags} */
-const FLAGS = {
+import type { Flags, Config } from 'lighthouse';
+import type { Browser } from 'puppeteer';
+
+
+const FLAGS: Flags = {
   disableFullPageScreenshot: true,
 };
 
-/** @type {import('lighthouse').Config} */
-const DESKTOP_CONFIG = {
+const DESKTOP_CONFIG: Config = {
   ...BASE_DESKTOP_CONFIG,
 }
 
-/** @type {import('lighthouse').Config} */
-const MOBILE_CONFIG = {
+const MOBILE_CONFIG: Config = {
   ...BASE_MOBILE_CONFIG,
   settings: {
     ...BASE_MOBILE_CONFIG.settings,
@@ -32,17 +33,14 @@ const MOBILE_CONFIG = {
   }
 };
 
-/**
- * @param {import('./config').Config} config
- */
+
 export default async function runLighthouse(config) {
   const { url, strategy = 'mobile', cookies } = config;
 
   console.debug('[Lighthouse] running on url: ', url.toString());
 
-  /** @type {import('puppeteer').Browser} */
-  let browser;
-  if(process.env.NODE_ENV === 'testing') {
+  let browser: Browser;
+  if (process.env.NODE_ENV === 'testing') {
     browser = await puppeteer.launch({
       headless: 'new',
       defaultViewport: chromium.defaultViewport,
@@ -60,20 +58,24 @@ export default async function runLighthouse(config) {
 
   const page = await browser.newPage();
 
-  if(cookies && cookies.length) {
+  if (cookies && cookies.length) {
     await page.setCookie(...cookies);
   }
 
-  const { lhr: result } = await lighthouse(
-    url.toString(), 
-    FLAGS, 
-    strategy === 'desktop' ? DESKTOP_CONFIG : MOBILE_CONFIG, 
+  const resp = await lighthouse(
+    url.toString(),
+    FLAGS,
+    strategy === 'desktop' ? DESKTOP_CONFIG : MOBILE_CONFIG,
     page
   );
+  if (!resp) {
+    throw throwableResponse(500, 'failed to run lighthouse');
+  }
 
-  if(result.runWarnings && cookies && cookies.find(c => c.name === 'hlx-auth-token')) {
+  const { lhr: result } = resp;
+  if (result.runWarnings && cookies && cookies.find(c => c.name === 'hlx-auth-token')) {
     const redirectedToLogin = result.runWarnings.find(warning => warning.includes('was redirected to https://login.microsoftonline.com'));
-    if(redirectedToLogin) {
+    if (redirectedToLogin) {
       throw throwableResponse(401, 'authorization error', redirectedToLogin);
     }
   }
@@ -83,10 +85,10 @@ export default async function runLighthouse(config) {
   // await browser.close();
   page.close();
 
-  if(result.runtimeError) {
+  if (result.runtimeError) {
     console.info('[Lighthouse] runtime error: ', result.runtimeError);
-    const { status, message } = result.runtimeError;
-    throw throwableResponse(status, 'error from lighthouse', message);
+    const { code, message } = result.runtimeError;
+    throw throwableResponse(500, `error from lighthouse: ${code}`, message);
   }
 
   // const summary = Object.keys(result.categories).reduce((prev, category) => {

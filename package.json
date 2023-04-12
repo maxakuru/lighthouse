@@ -9,6 +9,8 @@
     "login:ecr": "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 282898975672.dkr.ecr.us-east-1.amazonaws.com",
     "dev:build": "docker compose up --build",
     "dev": "docker compose up",
+    "build": "npm run build:js && npm run build:image",
+    "build:js": "node build.js",
     "build:image": "docker build -t lighthouse-service:test .",
     "run:image": "docker run -dit -p 9000:8080 lighthouse-service:test",
     "deploy:image": "./deploy.sh"
@@ -16,11 +18,19 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@adobe/fetch": "^4.0.7",
+    "@adobe/helix-shared-body-data": "^2.0.1",
+    "@adobe/helix-shared-wrap": "^2.0.0",
+    "@adobe/helix-status": "^10.0.5",
     "@sparticuz/chromium": "^112.0.2",
     "lighthouse": "^10.1.0",
     "puppeteer": "^19.8.3"
   },
   "devDependencies": {
-    "aws-lambda": "^1.0.7"
+    "@types/aws-lambda": "^8.10.114",
+    "aws-lambda": "^1.0.7",
+    "dotenv": "^16.0.3",
+    "esbuild": "^0.17.16",
+    "typescript": "^5.0.4"
   }
 }
