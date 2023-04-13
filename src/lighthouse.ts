@@ -5,19 +5,20 @@ import BASE_MOBILE_CONFIG from 'lighthouse/core/config/lr-desktop-config.js';
 import chromium from '@sparticuz/chromium';
 import { throwableResponse } from './response.js';
 
-import type { Flags, Config } from 'lighthouse';
+import type { Flags, Config as LHConfig } from 'lighthouse';
 import type { Browser } from 'puppeteer';
+import type { Config } from './types';
 
 
 const FLAGS: Flags = {
   disableFullPageScreenshot: true,
 };
 
-const DESKTOP_CONFIG: Config = {
+const DESKTOP_CONFIG: LHConfig = {
   ...BASE_DESKTOP_CONFIG,
 }
 
-const MOBILE_CONFIG: Config = {
+const MOBILE_CONFIG: LHConfig = {
   ...BASE_MOBILE_CONFIG,
   settings: {
     ...BASE_MOBILE_CONFIG.settings,
@@ -34,7 +35,7 @@ const MOBILE_CONFIG: Config = {
 };
 
 
-export default async function runLighthouse(config) {
+export default async function runLighthouse(config: Config) {
   const { url, strategy = 'mobile', cookies } = config;
 
   console.debug('[Lighthouse] running on url: ', url.toString());

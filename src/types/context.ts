@@ -3,7 +3,7 @@ import { Helix } from '@adobe/helix-universal';
 export type Environment = Record<string, string>;
 
 export interface POSTData {
-
+  // TODO
 }
 
 /**

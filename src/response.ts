@@ -36,12 +36,6 @@ export const makeErrorResponse = (
   });
 }
 
-/**
- * @param {number} statusCode 
- * @param {string} xError 
- * @param {string} [message] 
- * @returns {ErrorWithResponse}
- */
 export const throwableResponse = (
   statusCode: number,
   xError: string,
